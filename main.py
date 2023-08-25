@@ -8,10 +8,10 @@ from automation_script import process_csv_to_webclient
 
 #Github url that will send out new update to apps as new features are added also checks for updates
 
-GITHUB_REPO ="https://api.github.com/repos/parlo12/YOUR_REPO_NAME/releases/latest"
+GITHUB_REPO ="https://api.github.com/repos/parlo12/3cx_automation/releases/latest"
 
 def check_for_updates(current_version):
-    url = f"https://api.github.com/repos/parlo12/{REPO_NAME}/releases/latest"
+    url = f"https://api.github.com/repos/parlo12/{3cx_automation}/releases/latest"
     response = requests.get(url)
     
     # Check if request was successful
