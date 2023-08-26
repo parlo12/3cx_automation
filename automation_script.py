@@ -42,11 +42,11 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
 
     # Wait for the page to load
     time.sleep(5)
-
+    
     with open(csv_filepath, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
         for row in csvreader:
-            print(row.keys())
+            #print(row.keys())
             if stop_event and stop_event.is_set():
                 break
 
@@ -57,6 +57,7 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
                 new_chat_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@data-id='btnNewChat']")))
                 new_chat_button.click()
 
+
                 send_sms_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[data-id='btnStartSmsChat']")))
                 send_sms_button.click()
 
@@ -64,10 +65,12 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
                 input_field.send_keys(agent_phone_with_prefix)
                 input_field.send_keys(Keys.RETURN)
                 time.sleep(2)  # Wait before sending the message
-
+            try:
                 # Find and click the provider item
                 provider_item = driver.find_element(By.XPATH, "//app-provider-item")
                 provider_item.click()
+            except Exception as e:
+                print("Error occured",e)
 
                 # Click on the phone number element
                 phone_number_element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#showParticipants")))

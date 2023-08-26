@@ -6,12 +6,17 @@ from tkinter import ttk, filedialog, messagebox
 import threading
 from automation_script import process_csv_to_webclient
 
+#check path for version.txt file
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+VERSION_FILE_PATH = os.path.join(BASE_DIR, "version.txt")
+
 #Github url that will send out new update to apps as new features are added also checks for updates
 
 GITHUB_REPO ="https://api.github.com/repos/parlo12/3cx_automation/releases/latest"
 
 def check_for_updates(current_version):
-    url = f"https://api.github.com/repos/parlo12/{3cx_automation}/releases/latest"
+    url = f"https://api.github.com/repos/parlo12/3cx_automation/releases/latest"
     response = requests.get(url)
     
     # Check if request was successful
@@ -131,7 +136,7 @@ class Application:
     #checking for updates available for the app
 
     def on_check_updates(self):
-        with open("version.txt", "r") as file:
+        with open(VERSION_FILE_PATH, "r") as file:
             current_version =file.readline().strip()
 
         lastest_version, download_url = check_for_updates(current_version)
@@ -157,4 +162,3 @@ if __name__ == "__main__":
     root = tk.Tk()
 app = Application(root)
 root.mainloop()
-
