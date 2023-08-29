@@ -1,15 +1,18 @@
 import csv
 import time
+import logging
 from selenium import webdriver
+import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
 
 # def process_csv_to_webclient(csv_filepath, stop_event=None):
 def process_csv_to_webclient(csv_filepath, username, password, phone_column_name, url, stop_event=None):
 
-
+    log = logging.basicConfig(level=logging.INFO)
     # Initialize WebDriver
     driver = webdriver.Chrome()
 
@@ -18,7 +21,7 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
     driver.get(url)
 
     # Wait for the username field to become visible
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 10)
     username_field = wait.until(EC.visibility_of_element_located((By.ID, "loginInput")))
 
     # Enter username
@@ -41,7 +44,7 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
     chat_link.click()
 
     # Wait for the page to load
-    time.sleep(5)
+    
     
     with open(csv_filepath, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
@@ -53,32 +56,46 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
             agent_phone = row[phone_column_name]
             if agent_phone:
                 agent_phone_with_prefix = '+1' + agent_phone
-
+                # this clicks on the plus sign to open the text options 
                 new_chat_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@data-id='btnNewChat']")))
+                
                 new_chat_button.click()
 
-
+                # this click on the SMS button to open the text field 
                 send_sms_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[data-id='btnStartSmsChat']")))
+                
                 send_sms_button.click()
-
+                
+                #place number in text
                 input_field = driver.find_element(By.ID, "inputChatCompose")
+                
                 input_field.send_keys(agent_phone_with_prefix)
+                
                 input_field.send_keys(Keys.RETURN)
-                time.sleep(2)  # Wait before sending the message
-            try:
-                # Find and click the provider item
+                  # Wait before sending the message
+                print(f"going to jump in xpath //app-provider-item")
+            
+           
                 provider_item = driver.find_element(By.XPATH, "//app-provider-item")
+                
                 provider_item.click()
-            except Exception as e:
-                print("Error occured",e)
+                
+                print(f"right after the click")
+                
 
                 # Click on the phone number element
+                print(f"right before the CSS_SELECTOR showParticipants")
                 phone_number_element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#showParticipants")))
+                print(f"right after the CSS_SELECTOR showParticipants")
+                
+                print(f"after 4 seconds  CSS_SELECTOR showParticipants")
                 phone_number_element.click()
-
-                # Wait for the "Add" button to become clickable
+                print(f"click completed for CSS_SELECTOR showParticipants")
+                           
+                # # Wait for the "Add" button to become clickable
+                print(f"jumping in chatInfoAddBtn")
                 add_button = wait.until(EC.element_to_be_clickable((By.ID, "chatInfoAddBtn")))
-
+                
                 # Click on the "Add" button
                 add_button.click()
 
@@ -131,3 +148,4 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
 
     # Close the driver:
     driver.quit()
+

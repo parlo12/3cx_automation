@@ -1,10 +1,13 @@
 import requests
 import zipfile
 import os
+import platform
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import threading
 from automation_script import process_csv_to_webclient
+
+#
 
 #check path for version.txt file
 
@@ -15,7 +18,32 @@ VERSION_FILE_PATH = os.path.join(BASE_DIR, "version.txt")
 
 GITHUB_REPO ="https://api.github.com/repos/parlo12/3cx_automation/releases/latest"
 
+def get_appropriate_asset(data):
+    #Check the user's OS
+
+    os_name = platform.system().lower()
+    print(f"Dectected os: {os_name}")
+
+    # If the os is Darwi (macOS), we will look for an asset that contain darwin in it's name
+    if os_name =="darwin":
+
+        # Checking for assets name
+
+        for asset in data['assets']:
+            print(f"Checking asset: {asset['name']}")
+        if os_name in asset['name'].lower():
+            return asset['browser_download_url']
+    return None
+
+def get_current_version():
+    with open(VERSION_FILE_PATH,"r") as file:
+        # Read the first line which contains the version
+        version = file.readline().strip()
+    return version
+
 def check_for_updates(current_version):
+    current_version = get_current_version()
+
     url = f"https://api.github.com/repos/parlo12/3cx_automation/releases/latest"
     response = requests.get(url)
     
@@ -32,12 +60,21 @@ def check_for_updates(current_version):
         return False, current_version
 
     latest_version = data['tag_name']
-    download_url = data['html_url']  # Link to the release page
+    # download_url = data['html_url']  # Link to the release page
+    #Get the appropriate asset for the user's platform 
+    #Strip the 'v' prefix from the Github tag
+    latest_version =latest_version.lstrip('v')
 
     if current_version < latest_version:
-        return True, download_url
+        download_url = get_appropriate_asset(data)
+        if download_url:
+            return True, download_url
+        else:
+            print("Suitable asset not found for the platfom")
+            print(f"this is the download_url data: {download_url}")
+        return False, current_version
     else:
-        return False, download_url
+        return False, current_version
 
 
 def update_aplication(download_url):
@@ -139,14 +176,15 @@ class Application:
         with open(VERSION_FILE_PATH, "r") as file:
             current_version =file.readline().strip()
 
-        lastest_version, download_url = check_for_updates(current_version)
-        if download_url:
-            response = messagebox.askyesno("Update Available", f"Version{lastest_version} is available. DO you want to update?")
+        is_update_available, download_url = check_for_updates(current_version)
+        if is_update_available and download_url: #added extra check for download_url here
+            response = messagebox.askyesno("Update Available", f"Version {download_url.lstrip('v')} is available. Do you want to update?")
             if response:
                 update_aplication(download_url)
-                messagebox.showinfo("Update completed", "Please restart the application.")
-        else:
-            messagebox.showinfo("No Updates", "You are using the latest version.")
+                messagebox.showinfo("Update complete", "Please restart the application.")
+
+            else:
+                messagebox.showinfo("No Updates", "You are using the latest version.")
         
     def run_script(self):
         self.stop_event = threading.Event()
