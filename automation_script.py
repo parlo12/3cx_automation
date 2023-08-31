@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 
 # def process_csv_to_webclient(csv_filepath, stop_event=None):
-def process_csv_to_webclient(csv_filepath, username, password, phone_column_name, url, stop_event=None):
+def process_csv_to_webclient(csv_filepath, username, password, phone_column_name, url, template, stop_event=None):
 
     log = logging.basicConfig(level=logging.INFO)
     # Initialize WebDriver
@@ -129,10 +129,20 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
                 ok_button.click()
 
                 # Construct the message
-                message = (
-                    f"Hello {first_name} {last_name}, "
-                    f"I am Devin with RHM. The house located at {address}, {city}, {state} {zip_code}. "
-                    f"Please let me know if you are interested in hearing my offer."
+                # message = (
+                #     f"Hello {first_name} {last_name}, "
+                #     f"I am Fred from MJ Real Estate Solves. I'm reaching out because I'm interested in purchasing the property located at {address}, {city}, {state} {zip_code}. "
+                #     f"would you be open to selling."
+                # )
+
+                #Dynamic message 
+                message = template.format(
+                    first_name=first_name,
+                    last_name=last_name,
+                    address=address,
+                    city=city,
+                    state=state,
+                    zip_code=zip_code
                 )
 
                 # Find the message input field and fill in the message

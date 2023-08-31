@@ -24,13 +24,10 @@ def get_appropriate_asset(data):
     os_name = platform.system().lower()
     print(f"Dectected os: {os_name}")
 
-    # If the os is Darwi (macOS), we will look for an asset that contain darwin in it's name
-    if os_name =="darwin":
+    # Checking for assets name
 
-        # Checking for assets name
-
-        for asset in data['assets']:
-            print(f"Checking asset: {asset['name']}")
+    for asset in data['assets']:
+        print(f"Checking asset: {asset['name']}")
         if os_name in asset['name'].lower():
             return asset['browser_download_url']
     return None
@@ -134,6 +131,7 @@ class Application:
         self.column_name_entry = ttk.Entry(self.master, textvariable=self.column_name_var, width=20)
         self.column_name_entry.grid(row=3, column=1, padx=10, pady=10)
 
+      
         # Web Client URL
         self.label5 = ttk.Label(self.master, text="URL:")
         self.label5.grid(row=4, column=0, padx=10, pady=10)
@@ -141,6 +139,17 @@ class Application:
         self.url_var = tk.StringVar()
         self.url_entry = ttk.Entry(self.master, textvariable=self.url_var, width=40)
         self.url_entry.grid(row=4, column=1, padx=10, pady=10)
+
+        # Message box 
+        self.label6 = ttk.Label(self.master, text="Message Template:")
+        self.label6.grid(row=7, column=0, padx=10, pady=10)
+
+        self.template_text = tk.Text(self.master, height=5, width=40)
+        self.template_text.grid(row=7, column=1, padx=10, pady=10, columnspan=2)
+        self.template_text.insert(tk.END, "Hello {first_name} {last_name}, I'm reaching out regarding {address}, {city}, {state} {zip_code}.")
+
+
+
 
         # Start and Stop buttons
         self.start_button = ttk.Button(self.master, text="Start", command=self.start_script)
@@ -192,9 +201,10 @@ class Application:
         username = self.username_var.get()
         password = self.password_var.get()
         column_name = self.column_name_var.get()
+        template = self.template_text.get("1.0", tk.END).strip()
         url = self.url_var.get()
         
-        process_csv_to_webclient(csv_path, username, password, column_name, url, self.stop_event)
+        process_csv_to_webclient(csv_path, username, password, column_name, url, template, self.stop_event)
 
 if __name__ == "__main__":
     root = tk.Tk()
