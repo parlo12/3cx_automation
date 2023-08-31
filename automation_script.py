@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 
 # def process_csv_to_webclient(csv_filepath, stop_event=None):
-def process_csv_to_webclient(csv_filepath, username, password, phone_column_name, url, template, stop_event=None):
+def process_csv_to_webclient(csv_filepath, username, password, phone_column_name, url, template, did, stop_event=None):
 
     log = logging.basicConfig(level=logging.INFO)
     # Initialize WebDriver
@@ -76,8 +76,8 @@ def process_csv_to_webclient(csv_filepath, username, password, phone_column_name
                 print(f"going to jump in xpath //app-provider-item")
             
            
-                provider_item = driver.find_element(By.XPATH, "//app-provider-item")
-                
+                #provider_item = driver.find_element(By.XPATH, "//app-provider-item")
+                provider_item = driver.find_element(By.XPATH, f"//small[contains(text(),'{did}')]")
                 provider_item.click()
                 
                 print(f"right after the click")

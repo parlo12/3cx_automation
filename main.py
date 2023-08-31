@@ -148,6 +148,14 @@ class Application:
         self.template_text.grid(row=7, column=1, padx=10, pady=10, columnspan=2)
         self.template_text.insert(tk.END, "Hello {first_name} {last_name}, I'm reaching out regarding {address}, {city}, {state} {zip_code}.")
 
+        #adding DID for different agent to use 
+
+        self.label7 = ttk.Label(self.master, text="Enter DID assigned to you:")
+        self.label7.grid(row=8, column=0, padx=10, pady=10)
+        
+        self.did_var = tk.StringVar()
+        self.did_var_entry= tk.Entry(self.master, textvariable=self.did_var, width=10)
+        self.did_var_entry.grid(row=8, column=1, padx=10, pady=10)
 
 
 
@@ -203,8 +211,9 @@ class Application:
         column_name = self.column_name_var.get()
         template = self.template_text.get("1.0", tk.END).strip()
         url = self.url_var.get()
+        did = self.did_var.get()
         
-        process_csv_to_webclient(csv_path, username, password, column_name, url, template, self.stop_event)
+        process_csv_to_webclient(csv_path, username, password, column_name, url, template, did, self.stop_event)
 
 if __name__ == "__main__":
     root = tk.Tk()
